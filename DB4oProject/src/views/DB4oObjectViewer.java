@@ -277,7 +277,13 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 					DB4oConnection dbc = dbch.get(c.getName());
 
 //					JTableData jta = dbc.getTableDataForClass(c);
-					JTableData jta = dbc.getTableDataForClassAndSuperClasses(c);
+					JTableData jta = null;
+					try {
+						jta = dbc.getTableDataForClassAndSuperClasses(c);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					mtp.addTabForOnlyDataView(c, jta);
 
 				} catch (Exception e) {

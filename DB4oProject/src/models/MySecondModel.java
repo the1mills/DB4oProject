@@ -19,7 +19,8 @@ public class MySecondModel extends DB4oModel {
 	public MySecondModel() {
 		
 		super();
-		canAddNewRecordInObjectViewer = false;
+		canAddNewRecordInObjectViewer = true;
+		canEditRecordInObjectViewer = true;
 //		this.setDatabaseConnectionInfo(new DB4oConnectionInfo(DB4oModel.prePath + this.getClass().getSimpleName() + "Connection"+".db4o"));
 //			this.setSeqName(this.getClass().getName() + "Sequence");
 		

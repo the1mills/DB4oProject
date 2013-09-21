@@ -19,7 +19,8 @@ import annotations.ViewableField;
 public abstract class DB4oModel {
 
 
-	public boolean canAddNewRecordInObjectViewer = true;
+	public boolean canAddNewRecordInObjectViewer;
+	public boolean canEditRecordInObjectViewer;
 	//public transient static String prePath = "C:\\Users\\alex\\Desktop\\db4oFiles\\";
 	public transient static String prePath = "C:\\Users\\denman\\Desktop\\db4oFiles\\";
 	@ViewableField
@@ -165,6 +166,14 @@ public abstract class DB4oModel {
 	public void setCanAddNewRecordInObjectViewer(
 			boolean canAddNewRecordInObjectViewer) {
 		this.canAddNewRecordInObjectViewer = canAddNewRecordInObjectViewer;
+	}
+	
+	public boolean isCanEditRecordInObjectViewer() {
+		return canEditRecordInObjectViewer;
+	}
+
+	public void setCanEditRecordInObjectViewer(boolean canEditRecordInObjectViewer) {
+		this.canEditRecordInObjectViewer = canEditRecordInObjectViewer;
 	}
 	
 	public Db4oUUID getUuid() {

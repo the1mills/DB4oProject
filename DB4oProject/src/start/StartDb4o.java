@@ -63,6 +63,7 @@ public class StartDb4o {
 	public static void main(String[] args) {
 		
 		EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
+		
 		configuration.file().generateUUIDs(ConfigScope.GLOBALLY);
 
 		new StartDb4o();

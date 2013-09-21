@@ -10,6 +10,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import staticClasses.DB4oProjUtils;
 
 import jtableStuff.JTableData;
@@ -112,7 +114,11 @@ public class DB4oConnection {
 		this.getDb().delete(o);
 	}
 	
-	
+	public void commit() {
+
+		this.getDb().commit();
+
+	}
 	
 	
 
@@ -171,6 +177,11 @@ public class DB4oConnection {
 
 	public JTableData getThreeColumnListOfAllDBObjects() {
 
+		Vector<Class<?>> columnTypes = new Vector<Class<?>>();
+		columnTypes.add(String.class);
+		columnTypes.add(Integer.class);
+		columnTypes.add(Object.class);
+		
 		Object[] tableData = new Object[2];
 
 		String[] columnNames = { "Object to String", "Object id",
@@ -197,7 +208,7 @@ public class DB4oConnection {
 			i++;
 		}
 
-		return new JTableData(null, columnNames, dataValues);
+		return new JTableData(null, columnTypes, columnNames, dataValues);
 
 		// MyStaticFields.mainFrame = new MakeJTable(columnNames,dataValues);
 		// MyStaticFields.mainFrame.setVisible(true);
@@ -257,9 +268,9 @@ public class DB4oConnection {
 	}
 
 
-	public JTableData getTableDataForObject(Object o) {
+	public JTableData getTableDataForObjectsClass(Object o) {
 
-		// Field[] columnFields = o.getClass().getDeclaredFields();
+		Vector<Class<?>> columnTypes = new Vector<Class<?>>();
 		Field[] columnFields = o.getClass().getDeclaredFields();
 		String[] columnNames = new String[columnFields.length];
 
@@ -279,6 +290,8 @@ public class DB4oConnection {
 
 			Object obj = x.next();
 			for (int j = 0; j < columnFields.length; j++) {
+				
+				columnTypes.add(columnFields[j].getType());
 				try {
 					String nameOfField = obj.getClass()
 							.getDeclaredField(columnFields[j].getName())
@@ -319,12 +332,12 @@ public class DB4oConnection {
 			i++;
 		}
 
-		JTableData jta = new JTableData(o, columnNames, dataValues);
+		JTableData jta = new JTableData(o, columnTypes, columnNames, dataValues);
 		return jta;
 
 	}
 
-	public void openJTableWithFrame(JTableData jta) {
+	public void openJTablFrameWithJTableData(JTableData jta) {
 
 		MakeJTableFrame mainFrame = new MakeJTableFrame(jta);
 		mainFrame.setVisible(true);
@@ -334,8 +347,8 @@ public class DB4oConnection {
 	public JTableData getTableDataForClass(Class<?> c) {
 
 		Field[] columnFields = c.getDeclaredFields();
-//		Field[] columnFields = c.getFields();
 		String[] columnNames = new String[columnFields.length + 1];
+		Vector<Class<?>> columnTypes = new Vector<Class<?>>();
 
 		int z = 0;
 		for (z = 0; z < columnFields.length;z++) {
@@ -358,6 +371,9 @@ public class DB4oConnection {
 
 			int j = 0;
 			for (j = 0; j < columnFields.length; j++) {
+				
+				columnTypes.add(columnFields[j].getType());
+				
 				try {
 					String nameOfField = p.getClass()
 							.getDeclaredField(columnFields[j].getName())
@@ -402,7 +418,7 @@ public class DB4oConnection {
 			i++;
 		}
 
-		JTableData jta = new JTableData(c, columnNames, dataValues);
+		JTableData jta = new JTableData(c, columnTypes,columnNames, dataValues);
 		return jta;
 
 	}
@@ -411,7 +427,7 @@ public class DB4oConnection {
 
 		
 		Vector<Field> allFields = new Vector<Field>();
-		
+		Vector<Class<?>> columnTypes = new Vector<Class<?>>();
 		
 		Field[] classFields = c.getDeclaredFields();
 		//Field[] columnFields = c.getFields();
@@ -458,7 +474,7 @@ public class DB4oConnection {
 
 		int z = 0;
 		for (z = 0; z < allFields.size();z++) {
-			columnNames[z] = allFields.get(z).getName();
+			columnNames[z] = WordUtils.capitalize(allFields.get(z).getName());
 		}
 		
 		columnNames[z] = "Object Itself";
@@ -477,6 +493,7 @@ public class DB4oConnection {
 
 			int j = 0;
 			for (j = 0; j < allFields.size(); j++) {
+				
 				try {
 					
 					boolean useSuperClass = false;
@@ -485,7 +502,7 @@ public class DB4oConnection {
 					try {
 						nameOfField = p.getClass().getDeclaredField(allFields.get(j).getName()).getName();
 					}  catch (NoSuchFieldException e) {
-						System.out.println("not field in class, trying superclass...");
+						//System.out.println("not field in class, trying superclass...");
 					}
 					if(nameOfField == null){
 						useSuperClass = true;
@@ -543,17 +560,20 @@ public class DB4oConnection {
 
 			i++;
 		}
+		
+		
+		int k = 0;
+		for (k = 0; k < allFields.size(); k++) {
+			columnTypes.add(allFields.get(k).getType());
+		}
+		columnTypes.add(DB4oModel.class);
+		
 
-		JTableData jta = new JTableData(c, columnNames, dataValues);
+		JTableData jta = new JTableData(c, columnTypes, columnNames, dataValues);
 		return jta;
 
 	}
 
-	public void commit() {
-
-		db.commit();
-
-	}
 
 	public DB4oConnectionInfo getDbci() {
 		return dbci;

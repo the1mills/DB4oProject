@@ -4,15 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import jtableStuff.JTableData;
 import jtableStuff.MyTableDataPanel;
@@ -20,6 +22,7 @@ import models.DB4oConnectionInfo;
 import models.DB4oModel;
 import staticClasses.MyConnections;
 import utilities.DB4oConnection;
+import utilities.DB4oInternalId;
 
 public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements ActionListener {
 
@@ -29,11 +32,13 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 	private static final long serialVersionUID = 1L;
 	private String tabName = null;
 	private Class<DB4oModel> db4oClass = null;
-	private MyTableDataPanel centerPanel = null;
+	private MyTableDataPanel centerDataPanel = null;
 	private JButton truncateButton;
 	private JButton deleteSelectedButton;
 	private JButton addRecordButton;
 	private AddNewRecordView anrv;
+	private JButton editRecordButton;
+	private EditRecordView erv;
 
 	public MyDB4oTabbedView(Class<DB4oModel> className) {
 
@@ -50,7 +55,6 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 
 		
 		addRecordButton = new JButton("Add Record");
-
 		addRecordButton.addActionListener(this);
 		
 		Boolean addingIsAllowable = false;
@@ -98,6 +102,56 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 				e1.printStackTrace();
 			}
 			
+			
+			
+			editRecordButton = new JButton("Edit Record");
+			editRecordButton.addActionListener(this);
+			
+			Boolean editingIsAllowable = false;
+			
+			DB4oModel db4m1 = null;
+			try {
+				 db4m1 =  this.getDb4oClass().newInstance();
+			} catch (InstantiationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IllegalAccessException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+				
+			Method m1 = null;
+			
+				try {
+					m1 = db4m.getClass().getMethod("isCanEditRecordInObjectViewer", null);
+				} catch (SecurityException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (NoSuchMethodException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
+				try {
+					editingIsAllowable = (Boolean) m.invoke(db4m, null);
+					if(editingIsAllowable){
+						editRecordButton.setEnabled(true);
+					}
+					else{
+						editRecordButton.setEnabled(false);
+					}
+				} catch (IllegalArgumentException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (InvocationTargetException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			
 	
 		
@@ -156,11 +210,11 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				int[] selectedRows = centerPanel.getMyTable().getSelectedRows();
+				int[] selectedRows = centerDataPanel.getMyTable().getSelectedRows();
 				
 				Vector<DB4oModel> v = new Vector<DB4oModel>();
 				
-				int lastColumn = centerPanel.getMyTable().getColumnCount() -1;
+				int lastColumn = centerDataPanel.getMyTable().getColumnCount() -1;
 				
 				boolean triedToDeleteANonDB4oModel = false;
 				
@@ -168,7 +222,7 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 					
 					DB4oModel o;
 					try {
-						o = (DB4oModel) centerPanel.getMyTable().getValueAt(i, lastColumn);
+						o = (DB4oModel) centerDataPanel.getMyTable().getValueAt(i, lastColumn);
 						v.add(o);
 					} catch (Exception e) {
 						triedToDeleteANonDB4oModel = true;
@@ -195,6 +249,7 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 		});
 
 		northPanel.add(addRecordButton);
+		northPanel.add(editRecordButton);
 		northPanel.add(deleteSelectedButton);
 		northPanel.add(truncateButton);
 
@@ -210,15 +265,15 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 
 	public void addDataPaneWithModel(DB4oModel dm) {
 
-		if (centerPanel != null) {
-			this.remove(centerPanel);
+		if (centerDataPanel != null) {
+			this.remove(centerDataPanel);
 		}
 
-		JTableData jta = dm.getDb4oConn().getTableDataForObject(dm);
+		JTableData jta = dm.getDb4oConn().getTableDataForObjectsClass(dm);
 		// JTableData jta = dm.getDb4oConn().getTableDataForObject(dm);
-		centerPanel = new MyTableDataPanel(jta);
+		centerDataPanel = new MyTableDataPanel(jta);
 
-		this.add(centerPanel, BorderLayout.CENTER);
+		this.add(centerDataPanel, BorderLayout.CENTER);
 
 		this.revalidate();
 		this.repaint();
@@ -240,19 +295,25 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 
 	public void addDataPaneWithClass(Class<DB4oModel> c) {
 
-		if (centerPanel != null) {
-			this.remove(centerPanel);
+		if (centerDataPanel != null) {
+			this.remove(centerDataPanel);
 		}
 
 		db4oClass = (Class<DB4oModel>) c;
 
 		DB4oConnection dbc = DB4oObjectViewer.dbch.get(c.getName());
 //		JTableData jta = dbc.getTableDataForClass(c);
-		JTableData jta = dbc.getTableDataForClassAndSuperClasses(c);
+		JTableData jta = null;
+		try {
+			jta = dbc.getTableDataForClassAndSuperClasses(c);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// JTableData jta = dm.getDb4oConn().getTableDataForObject(dm);
-		centerPanel = new MyTableDataPanel(jta);
+		centerDataPanel = new MyTableDataPanel(jta);
 
-		this.add(centerPanel, BorderLayout.CENTER);
+		this.add(centerDataPanel, BorderLayout.CENTER);
 
 		this.revalidate();
 		this.repaint();
@@ -260,12 +321,12 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 
 	public void addDataPanel(MyTableDataPanel mtdp) {
 
-		if (centerPanel != null) {
-			this.remove(centerPanel);
+		if (centerDataPanel != null) {
+			this.remove(centerDataPanel);
 		}
 
-		centerPanel = mtdp;
-		this.add(centerPanel, BorderLayout.CENTER);
+		centerDataPanel = mtdp;
+		this.add(centerDataPanel, BorderLayout.CENTER);
 
 		this.revalidate();
 		this.repaint();
@@ -319,11 +380,11 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 	}
 
 	public MyTableDataPanel getCenterPanel() {
-		return centerPanel;
+		return centerDataPanel;
 	}
 
 	public void setCenterPanel(MyTableDataPanel centerPanel) {
-		this.centerPanel = centerPanel;
+		this.centerDataPanel = centerPanel;
 	}
 
 	public AddNewRecordView getAnrv() {
@@ -337,18 +398,11 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		if(e.getSource() == addRecordButton){
 
 				System.out.println("add record...");
 
 				if (db4oClass != null) {
-
-
-					DB4oConnectionInfo dbci = DB4oModel.hcd.get(db4oClass);
-
-					if (dbci == null) {
-						System.out.println("!!!!null connection info!!!!");
-						return;
-					}
 
 					if(anrv != null){
 						anrv.dispose();
@@ -362,6 +416,78 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements Action
 							"No class was found for this view.");
 					return;
 				}
+		}
+		else if(e.getSource() == editRecordButton){
+			
+			System.out.println("editing a record...");
+			
+			int[] rows = centerDataPanel.getMyTable().getSelectedRows();
+			
+			if(rows.length < 1){
+				JOptionPane.showMessageDialog(null, "No row selected to edit.");
+				return;
+			}
+			if(rows.length > 1){
+				JOptionPane.showMessageDialog(null, "Please select only one row to edit.");
+				return;
+			}
+			
+			int row = rows[0];
+			
+//			Enumeration<TableColumn> cols = centerDataPanel.getMyTable().getColumnModel().getColumns();
+			
+			int cols = centerDataPanel.getMyTable().getColumnCount();
+			TableModel tm = centerDataPanel.getMyTable().getModel();
+			
+			Integer colIndexForDB4oInternalId = null;
+			
+			for(int i = 0; i < cols; i++){
+			String columnName = tm.getColumnName(i);
+			if(columnName.equalsIgnoreCase("db4oInternalId")){
+				colIndexForDB4oInternalId = i;
+				break;
+			}
+			}
+			
+			if(colIndexForDB4oInternalId == null){
+				
+					JOptionPane.showMessageDialog(null, "No column with DB4oInternalId was found.");
+					return;
+	
+			}
+			
+			DB4oInternalId dii = (DB4oInternalId) centerDataPanel.getMyTable().getValueAt(row, colIndexForDB4oInternalId);
+			
+//			DB4oInternalId dii = (DB4oInternalId) centerDataPanel.getMyTable().getValueAt(row, 4);
+			
+			if(dii == null){
+				System.out.println("null internal id !!!");
+				return;
+			}
+			
+			DB4oConnectionInfo dbci = DB4oModel.hcd.get(db4oClass);
+
+			if (dbci == null) {
+				System.out.println("null connection info !!!");
+				return;
+			}
+			
+			DB4oConnection dbc = MyConnections.getConnection(dbci);
+			
+			if (dbc == null) {
+				System.out.println("null connection !!!");
+				return;
+			}
+			
+			DB4oModel db4m = dbc.getDb().ext().getByID(dii.getId());
+			dbc.getDb().ext().activate(db4m);
+			
+			if(erv != null){
+				erv.dispose();
+			}
+			erv = new EditRecordView(db4m,this);
+			erv.setVisible(true);
+		}
 		
 	}
 

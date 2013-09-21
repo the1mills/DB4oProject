@@ -11,7 +11,10 @@ public class FuckShitModel extends DB4oModel {
 	
 	@ViewableField
 	@EditableField
-	private String death = "fuck ass";
+	private Boolean boolDeath = false;
+	@ViewableField
+	@EditableField
+	private String murder = "slippy sluppy";
 	@ViewableField
 	@EditableField
 	private Integer fuckass = new Integer(0);
@@ -20,17 +23,20 @@ public class FuckShitModel extends DB4oModel {
 		
 		super();
 		canAddNewRecordInObjectViewer = true;
+		canEditRecordInObjectViewer = true;
 //		this.setDatabaseConnectionInfo(new DB4oConnectionInfo(DB4oModel.prePath + this.getClass().getSimpleName() + "Connection"+".db4o"));
 //		this.setSeqName(this.getClass().getName() + "Sequence");
 	}
 
-	public String getDeath() {
-		return death;
+	public String getMurder() {
+		return murder;
 	}
 
-	public void setDeath(String death) {
-		this.death = death;
+
+	public void setMurder(String murder) {
+		this.murder = murder;
 	}
+
 
 	public Integer getFuckass() {
 		return fuckass;
@@ -38,6 +44,14 @@ public class FuckShitModel extends DB4oModel {
 
 	public void setFuckass(Integer fuckass) {
 		this.fuckass = fuckass;
+	}
+	
+	public Boolean getBoolDeath() {
+		return boolDeath;
+	}
+
+	public void setBoolDeath(Boolean boolDeath) {
+		this.boolDeath = boolDeath;
 	}
 
 	@Override

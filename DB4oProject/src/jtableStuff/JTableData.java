@@ -1,28 +1,32 @@
 package jtableStuff;
 
+import java.util.Vector;
+
 public class JTableData {
 	
-	private Object[] columnNames = null;
+	private String[] columnNames = null;
 	private Object[][] data = null;
+	private Vector<Class<?>> columnTypes = null;
 	private Object objectForWhichDataWasRetrieved = null;
 	
 	
-	public JTableData(Object o, Object[] columnNames, Object[][] data) {
+	public JTableData(Object o, Vector<Class<?>> columnTypes, String[] columnNames, Object[][] data) {
 
 		this.setObjectForWhichDataWasRetrieved(o);
 		this.setColumnNames(columnNames);
 		this.setData(data);
+		this.setColumnTypes(columnTypes);
 	}
 
 
 
-	public Object[] getColumnNames() {
+	public String[] getColumnNames() {
 		return columnNames;
 	}
 
 
 
-	public void setColumnNames(Object[] columnNames) {
+	public void setColumnNames(String[] columnNames) {
 		this.columnNames = columnNames;
 	}
 
@@ -49,6 +53,18 @@ public class JTableData {
 	public void setObjectForWhichDataWasRetrieved(
 			Object objectForWhichDataWasRetrieved) {
 		this.objectForWhichDataWasRetrieved = objectForWhichDataWasRetrieved;
+	}
+
+
+
+	public Vector<Class<?>> getColumnTypes() {
+		return columnTypes;
+	}
+
+
+
+	public void setColumnTypes(Vector<Class<?>> columnTypes) {
+		this.columnTypes = columnTypes;
 	}
 
 

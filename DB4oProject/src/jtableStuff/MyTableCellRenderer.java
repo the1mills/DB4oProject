@@ -28,12 +28,12 @@ public class MyTableCellRenderer extends DefaultTableCellRenderer {
 	      p.add(jl,BorderLayout.NORTH);
 	     }
 	     else{
-	    	 JLabel jl = new JLabel("(null)");
+	    	 JLabel jl = new JLabel("value was (null) in renderer");
 		      p.add(jl,BorderLayout.NORTH);
 	     }
 	      
 	      if(isSelected){
-	    	  p.setBackground(Color.pink.darker());
+	    	  p.setBackground(Color.LIGHT_GRAY);
 	      }
 	      
 	      return p;

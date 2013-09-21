@@ -48,10 +48,8 @@ public class MyXXXModel extends DB4oModel {
 	public MyXXXModel() {
 
 		super();
-		// this.setDatabaseConnectionInfo(new
-		// DB4oConnectionInfo(DB4oModel.prePath +
-		// this.getClass().getSimpleName() + "Connection"+".db4o"));
-		// this.setSeqName(this.getClass().getName() + "Sequence");
+		canAddNewRecordInObjectViewer = true;
+		canEditRecordInObjectViewer = true;
 	}
 
 	@Override
