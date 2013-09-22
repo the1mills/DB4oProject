@@ -31,9 +31,8 @@ import models.DB4oModel;
 import staticClasses.DB4oProjUtils;
 import annotations.EditableField;
 
-public class AddNewRecordView extends JDialog implements ActionListener{
-	
-	
+public class AddNewRecordView extends JDialog implements ActionListener {
+
 	private Class<DB4oModel> db4c;
 	private Vector<Field> editableFields = new Vector<Field>();
 	private JPanel contentPanel;
@@ -46,7 +45,7 @@ public class AddNewRecordView extends JDialog implements ActionListener{
 	private JScrollPane js;
 	private JButton doneButton = new JButton("Save New Record");
 	private JButton cancelButton = new JButton("Cancel");
-	private Hashtable<JTextField,Field> jtfHash = new Hashtable<JTextField,Field>();
+	private Hashtable<JTextField, Field> jtfHash = new Hashtable<JTextField, Field>();
 	private JLabel titleLabel;
 	private MyDB4oTabbedView mdtv;
 	private JLabel errorMessageLabel;
@@ -63,141 +62,139 @@ public class AddNewRecordView extends JDialog implements ActionListener{
 		this.getContentPane().setLayout(new BorderLayout());
 		centerPanel = new JPanel();
 		js = new JScrollPane(centerPanel);
-		this.getContentPane().add(mainCenterPanel = new JPanel(),BorderLayout.CENTER);
+		this.getContentPane().add(mainCenterPanel = new JPanel(),
+				BorderLayout.CENTER);
 		mainCenterPanel.setLayout(new BorderLayout());
-		mainCenterPanel.add(js,BorderLayout.CENTER);
-		this.getContentPane().add(topPanel,BorderLayout.NORTH);
-		topPanel.add(setTitleLabel(new JLabel("Add New Record for Class: " + mdtv.getDb4oClass().getSimpleName())));
-		this.getContentPane().add(bottomPanel,BorderLayout.SOUTH);
+		mainCenterPanel.add(js, BorderLayout.CENTER);
+		this.getContentPane().add(topPanel, BorderLayout.NORTH);
+		topPanel.add(setTitleLabel(new JLabel("Add New Record for Class: "
+				+ mdtv.getDb4oClass().getSimpleName())));
+		this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 		bottomPanel.add(doneButton);
 		doneButton.addActionListener(this);
 		bottomPanel.add(cancelButton);
 		cancelButton.addActionListener(this);
-		this.getContentPane().add(eastPanel,BorderLayout.EAST);
-		this.getContentPane().add(westPanel,BorderLayout.WEST);
+		this.getContentPane().add(eastPanel, BorderLayout.EAST);
+		this.getContentPane().add(westPanel, BorderLayout.WEST);
 		centerPanel.setLayout(setGl(new GridLayout()));
 		gl.setColumns(1);
 		gl.setRows(Math.max(10, editableFields.size()));
 		gl.setHgap(10);
 		gl.setVgap(10);
-		
-		ml = new MouseListener(){
+
+		ml = new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
-				if(arg0.getSource() instanceof JTextField){
-					((JTextField) arg0.getSource()).setBorder(standardJTextFieldBorder);
+
+				if (arg0.getSource() instanceof JTextField) {
+					((JTextField) arg0.getSource())
+							.setBorder(standardJTextFieldBorder);
 				}
-				
+
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		};
-		
-		for(Field f: editableFields){
-			
-//			GridLayout glTemp = new GridLayout();
-//			glTemp.setColumns(3);
-//			JPanel p = new JPanel();
-//			p.setLayout(glTemp);
-//			p.setBackground(Color.LIGHT_GRAY);
-//			JLabel jl1 = new JLabel(f.getName());
-//			jl1.setPreferredSize(new Dimension(150,30));
-//			JLabel jl2 = new JLabel("(" + f.getType().getSimpleName() + ")");
-//			jl2.setPreferredSize(new Dimension(100,30));
-//			p.add(jl1,glTemp);
-//			JTextField jtf = new JTextField();
-//			jtf.setPreferredSize(new Dimension(400,30));
-//			p.add(jtf,glTemp);
-//			p.add(jl2,glTemp);
-//			centerPanel.add(p,gl);
-//			jtfHash.put(jtf, f);
-			
-		
+
+		for (Field f : editableFields) {
+
+			// GridLayout glTemp = new GridLayout();
+			// glTemp.setColumns(3);
+			// JPanel p = new JPanel();
+			// p.setLayout(glTemp);
+			// p.setBackground(Color.LIGHT_GRAY);
+			// JLabel jl1 = new JLabel(f.getName());
+			// jl1.setPreferredSize(new Dimension(150,30));
+			// JLabel jl2 = new JLabel("(" + f.getType().getSimpleName() + ")");
+			// jl2.setPreferredSize(new Dimension(100,30));
+			// p.add(jl1,glTemp);
+			// JTextField jtf = new JTextField();
+			// jtf.setPreferredSize(new Dimension(400,30));
+			// p.add(jtf,glTemp);
+			// p.add(jl2,glTemp);
+			// centerPanel.add(p,gl);
+			// jtfHash.put(jtf, f);
+
 			JPanel p = new JPanel();
 			p.setLayout(new BorderLayout());
 			JPanel centerPanelTemp = new JPanel();
-			p.add(centerPanelTemp,BorderLayout.CENTER);
+			p.add(centerPanelTemp, BorderLayout.CENTER);
 			p.setBackground(Color.LIGHT_GRAY);
 			JLabel jl1 = new JLabel(f.getName());
-			jl1.setPreferredSize(new Dimension(150,30));
+			jl1.setPreferredSize(new Dimension(150, 30));
 			JLabel jl2 = new JLabel("(" + f.getType().getSimpleName() + ")");
-			jl2.setPreferredSize(new Dimension(100,30));
+			jl2.setPreferredSize(new Dimension(100, 30));
 			centerPanelTemp.add(jl1);
 			JTextField jtf = new JTextField();
-			if(standardJTextFieldBorder == null){
+			if (standardJTextFieldBorder == null) {
 				standardJTextFieldBorder = jtf.getBorder();
 			}
 			jtf.addMouseListener(ml);
-			jtf.setPreferredSize(new Dimension(400,30));
+			jtf.setPreferredSize(new Dimension(400, 30));
 			centerPanelTemp.add(jtf);
 			centerPanelTemp.add(jl2);
-			centerPanel.add(p,gl);
+			centerPanel.add(p, gl);
 			jtfHash.put(jtf, f);
 		}
-		
-//		this.setMinimumSize(new Dimension(400,600));
-//		this.setMaximumSize(new Dimension(1000,800));
+
+		// this.setMinimumSize(new Dimension(400,600));
+		// this.setMaximumSize(new Dimension(1000,800));
 		errorMessageLabel = new JLabel();
 		errorMessageLabel.setForeground(Color.red.darker());
-		mainCenterPanel.add(errorMessageLabel,BorderLayout.SOUTH);
-		this.pack();
+		mainCenterPanel.add(errorMessageLabel, BorderLayout.SOUTH);
+		this.setSize(700, 900);
 	}
-	
-
-
 
 	private void findEditableFields() {
 		Field[] fs = db4c.getDeclaredFields();
-		
-		for(Field f: fs){
+
+		for (Field f : fs) {
 			boolean isEditable = f.isAnnotationPresent(EditableField.class);
-			if(isEditable){
+			if (isEditable) {
 				f.setAccessible(true);
 				editableFields.add(f);
 			}
 		}
-		
+
 		Class<?> superClass = (Class<?>) db4c;
-		
-		
-		while((superClass = (Class<?>) superClass.getGenericSuperclass())  != null){
-			
+
+		while ((superClass = (Class<?>) superClass.getGenericSuperclass()) != null) {
+
 			Field[] superClassFields = superClass.getDeclaredFields();
-			
-			for(Field f: superClassFields){
-				
+
+			for (Field f : superClassFields) {
+
 				boolean isEditable = f.isAnnotationPresent(EditableField.class);
-				if(isEditable){
-				f.setAccessible(true);
-				editableFields.add(f);
-				}
+				if (isEditable) {
+					f.setAccessible(true);
+					editableFields.add(f);
 				}
 			}
+		}
 	}
 
 	public Class<DB4oModel> getDb4c() {
@@ -216,150 +213,118 @@ public class AddNewRecordView extends JDialog implements ActionListener{
 		this.editableFields = editableFields;
 	}
 
-
-
-
 	public JPanel getContentPanel() {
 		return contentPanel;
 	}
-
-
-
 
 	public JPanel setContentPanel(JPanel contentPanel) {
 		this.contentPanel = contentPanel;
 		return contentPanel;
 	}
 
-
-
-
 	public JPanel getCenterPanel() {
 		return centerPanel;
 	}
-
-
-
 
 	public void setCenterPanel(JPanel centerPanel) {
 		this.centerPanel = centerPanel;
 	}
 
-
-
-
 	public GridLayout getGl() {
 		return gl;
 	}
-
-
-
 
 	public GridLayout setGl(GridLayout gl) {
 		this.gl = gl;
 		return gl;
 	}
 
-
-
-
-	public Hashtable<JTextField,Field> getJtfHash() {
+	public Hashtable<JTextField, Field> getJtfHash() {
 		return jtfHash;
 	}
 
-
-
-
-	public void setJtfHash(Hashtable<JTextField,Field> jtfHash) {
+	public void setJtfHash(Hashtable<JTextField, Field> jtfHash) {
 		this.jtfHash = jtfHash;
 	}
-	
+
 	public JButton getCancelButton() {
 		return cancelButton;
 	}
-
-
-
 
 	public void setCancelButton(JButton cancelButton) {
 		this.cancelButton = cancelButton;
 	}
 
-
-
-
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		
-		if(arg0.getSource() == cancelButton){
+
+		if (arg0.getSource() == cancelButton) {
 			this.dispose();
 		}
-		if(arg0.getSource() == doneButton){
-			if(!doDataValidation()){
+		if (arg0.getSource() == doneButton) {
+			if (!doDataValidation()) {
 				return;
 			}
 			boolean success = createNewObjectAndSetValues();
-			if(success){
-			this.dispose();
+			if (success) {
+				this.dispose();
 			}
 		}
-		
+
 	}
 
-
-
-
 	private boolean createNewObjectAndSetValues() {
-		
+
 		DB4oModel db4m = null;
 		try {
 			db4m = db4c.newInstance();
 		} catch (InstantiationException e1) {
 			createErrorMessageLabel(null, e1);
-			JOptionPane.showMessageDialog(null, "Could not create new object \n " + e1.getMessage());
+			JOptionPane.showMessageDialog(null,
+					"Could not create new object \n " + e1.getMessage());
 			return false;
 		} catch (IllegalAccessException e1) {
 			createErrorMessageLabel(null, e1);
-			JOptionPane.showMessageDialog(null, "Could not create new object \n " + e1.getMessage());
+			JOptionPane.showMessageDialog(null,
+					"Could not create new object \n " + e1.getMessage());
 			return false;
 		}
-		
 
 		Enumeration<JTextField> e = jtfHash.keys();
-		
-		while(e.hasMoreElements()){
+
+		while (e.hasMoreElements()) {
 			JTextField jtf = e.nextElement();
-			String s =jtf.getText().trim();
+			String s = jtf.getText().trim();
 			Object o = null;
 			Field f = jtfHash.get(jtf);
 			Class<?> fieldType = f.getType();
-			
-			if(fieldType.equals(Integer.class)){
+
+			if (fieldType.equals(Integer.class)) {
 				try {
 					o = Integer.parseInt(s);
 				} catch (NumberFormatException e1) {
 					createErrorMessageLabel(jtf, e1);
 					return false;
 				}
-			}
-			else if(fieldType.equals(Boolean.class)){
+			} else if (fieldType.equals(Boolean.class)) {
 				try {
 					o = Boolean.parseBoolean(s);
 				} catch (Exception e1) {
 					createErrorMessageLabel(jtf, e1);
 					return false;
 				}
-			}
-			else if(fieldType.equals(Date.class)){
+			} else if (fieldType.equals(Date.class)) {
 				o = new Date();
-			}
-			else{
+			} else {
 				o = new String(s);
 			}
-			
+
 			Method m = null;
 			try {
-				m = db4m.getClass().getMethod("set"+DB4oProjUtils.INSTANCE.capitalizeString(f.getName()), fieldType);
+				m = db4m.getClass().getMethod(
+						"set"
+								+ DB4oProjUtils.INSTANCE.capitalizeString(f
+										.getName()), fieldType);
 			} catch (SecurityException e1) {
 				createErrorMessageLabel(jtf, e1);
 				return false;
@@ -367,7 +332,7 @@ public class AddNewRecordView extends JDialog implements ActionListener{
 				createErrorMessageLabel(jtf, e1);
 				return false;
 			}
-			
+
 			try {
 				m.invoke(db4m, o);
 			} catch (IllegalArgumentException e1) {
@@ -380,73 +345,49 @@ public class AddNewRecordView extends JDialog implements ActionListener{
 				createErrorMessageLabel(jtf, e1);
 				return false;
 			}
-			
+
 		}
-		
+
 		db4m.save();
 		mdtv.refreshView(db4c);
 		return true;
 	}
 
-
-
-
-	private void createErrorMessageLabel(JTextField jtf,
-			Exception e1) {
-		e1.printStackTrace();
-		errorMessageLabel.setText(e1.getMessage() + " ---->" + e1.getClass().getSimpleName());
-		if(jtf != null){
-		jtf.setBorder(BorderFactory.createLineBorder(Color.red, 2));
+	private void createErrorMessageLabel(JTextField jtf, Exception e1) {
+		// e1.printStackTrace();
+		errorMessageLabel.setText(e1.getMessage() + " ---->"
+				+ e1.getClass().getSimpleName());
+		if (jtf != null) {
+			jtf.setBorder(BorderFactory.createLineBorder(Color.red, 2));
 		}
 		this.repaint();
 	}
-
-
-
 
 	private boolean doDataValidation() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
-
-
-
 	public JLabel getTitleLabel() {
 		return titleLabel;
 	}
-
-
-
 
 	public JLabel setTitleLabel(JLabel titleLabel) {
 		this.titleLabel = titleLabel;
 		return titleLabel;
 	}
 
-
-
-
 	public MyDB4oTabbedView getMdtv() {
 		return mdtv;
 	}
-
-
-
 
 	public void setMdtv(MyDB4oTabbedView mdtv) {
 		this.mdtv = mdtv;
 	}
 
-
-
-
 	public JLabel getErrorMessageLabel() {
 		return errorMessageLabel;
 	}
-
-
-
 
 	public void setErrorMessageLabel(JLabel errorMessageLabel) {
 		this.errorMessageLabel = errorMessageLabel;

@@ -10,6 +10,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -27,9 +29,7 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
-import com.db4o.Db4oEmbedded;
-import com.db4o.config.ConfigScope;
-import com.db4o.config.EmbeddedConfiguration;
+import annotations.ViewableField;
 
 import jtableStuff.JTableData;
 import models.DB4oFile;
@@ -77,11 +77,13 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 
 	public static Vector<DB4oConnection> dbcv = new Vector<DB4oConnection>();
 	public static Hashtable<String, DB4oConnection> dbch = new Hashtable<String, DB4oConnection>();
+	public static int recursionDepth = 0;
+	public static int recursionDepthLimit = 4;
 
 	public DB4oObjectViewer() {
 
 	
-		
+		this.setTitle("Object Database Viewer (Java)");
 		this.setContentPane(contentPanel);
 		this.addWindowListener(this);
 		this.setSize(new Dimension(1000, 800));
@@ -138,7 +140,7 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 	private void buildTree() {
 
 		westpanel.removeAll();
-		MyDefaultMutableTreeNode root = new MyDefaultMutableTreeNode(folderOfDatabases);
+		MyDefaultMutableTreeNode root = new MyDefaultMutableTreeNode("DB4o Data", folderOfDatabases);
 
 		// MyTreeModel treeModel = new MyTreeModel(db);
 
@@ -148,10 +150,12 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 		// DefaultMutableTreeNode child2 = new
 		// DefaultMutableTreeNode("Child 2");
 		// root.add(child2);
+		
+		recursionDepth = 0;
 
 		for (DB4oFile f : db4oFiles) {
 
-			MyDefaultMutableTreeNode child1 = new MyDefaultMutableTreeNode(f);
+			MyDefaultMutableTreeNode child1 = new MyDefaultMutableTreeNode("DB4o File: " + f.getName(), f);
 			root.add(child1);
 
 			DB4oConnection dbc = MyConnections.getConnection(f);
@@ -194,7 +198,12 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 				vectorOfUniqueClasses.add(c);
 				dbch.put(c.getName(), dbc);
 				DB4oModel.hcd.put((Class<DB4oModel>) c, dbc.getDbci());
-				child1.add(new MyDefaultMutableTreeNode(c));
+				MyDefaultMutableTreeNode child2 = new MyDefaultMutableTreeNode(c.getSimpleName() + "(DB4oModel)",c);
+				child1.add(child2);
+
+				recursionDepth = 0;
+				findAllFieldsAndAddThemAsSubNodes(c,child2,true,recursionDepth);
+				
 			}
 		}
 
@@ -239,13 +248,13 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 				if (selRow != -1) {
 					if (isLeftClick && e.getClickCount() == 1) {
 						mySingleClick(selRow, selPath);
-					} else if (isLeftClick && e.getClickCount() == 2) {
+					} else if (isLeftClick) {
 
-						if (!vectorOfUniqueClasses.contains(o)) {
-							System.out.println("not a DB4oModel class...");
-							return;
-						}
-						myDoubleClick(selRow, selPath);
+//						if (!vectorOfUniqueClasses.contains(o)) {
+//							System.out.println("not a DB4oModel class...");
+//							return;
+//						}
+						myDoubleClick(o, selRow, selPath);
 					} else {
 
 						createPopupMenu(o, tree, e.getX(), e.getY());
@@ -254,43 +263,47 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 				}
 			}
 
-			private void myDoubleClick(int selRow, TreePath selPath) {
+			private void myDoubleClick(Object o, int selRow, TreePath selPath) {
 
 				System.out.println(selRow + "----" + selPath);
 
-				Class<DB4oModel> c = null;
-				try {
-
-					MyDefaultMutableTreeNode path = (MyDefaultMutableTreeNode) selPath
-							.getLastPathComponent();
-					c = ((Class<DB4oModel>) path.getObjectInNode());
-
-				
-					if(MyTabbedPane.hclass.get(c) != null){
+				if(o instanceof Class<?>){
+					
+					if(DB4oModel.class.isAssignableFrom((Class<?>) o)){
 						
-						MyDB4oTabbedView mdtv = MyTabbedPane.hclass.get(c);
-						mtp.getJtp().setSelectedComponent(mdtv);
-						return;
+						Class<DB4oModel> c = null;
+						try {
+
+							c = ((Class<DB4oModel>)o);
+
+						
+							if(MyTabbedPane.hclass.get(c) != null){
+								
+								MyDB4oTabbedView mdtv = MyTabbedPane.hclass.get(c);
+								mtp.getJtp().setSelectedComponent(mdtv);
+								return;
+							}
+							
+							DB4oConnection dbc = dbch.get(c.getName());
+
+//							JTableData jta = dbc.getTableDataForClass(c);
+							JTableData jta = null;
+							try {
+								jta = dbc.getTableDataForClassAndSuperClasses(c);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							mtp.addTabForOnlyDataView(c, jta);
+
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 					
-					
-					DB4oConnection dbc = dbch.get(c.getName());
-
-//					JTableData jta = dbc.getTableDataForClass(c);
-					JTableData jta = null;
-					try {
-						jta = dbc.getTableDataForClassAndSuperClasses(c);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					mtp.addTabForOnlyDataView(c, jta);
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-
+				
 			}
 
 			private void mySingleClick(int selRow, TreePath selPath) {
@@ -301,8 +314,83 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 		tree.addMouseListener(ml);
 
 		westpanel.add(js = new JScrollPane(tree));
+		//westpanel.setPreferredSize(new Dimension(500,3000));
+		js.setPreferredSize(new Dimension(300,3000));
+		westpanel.setMaximumSize(new Dimension(300,2900));
 		westpanel.revalidate();
 		westpanel.repaint();
+	}
+
+	private void findAllFieldsAndAddThemAsSubNodes(Class<?> cIn,
+			MyDefaultMutableTreeNode child, boolean recurseThroughSuperClasses, int recursionDepth) {
+	
+		
+		recursionDepth++;
+		
+		if(recursionDepth > recursionDepthLimit){
+			recursionDepth = 0;
+			return;
+		}
+		
+		Class<DB4oModel> c = (Class<DB4oModel>) cIn;
+		
+		
+		Field[] fs = c.getDeclaredFields();
+		
+		for(Field f: fs){
+			
+			MyDefaultMutableTreeNode mdmt = new MyDefaultMutableTreeNode(f.getName() + " (" + f.getType().getSimpleName() + ")",f.getType());
+			child.add(mdmt);
+			//recurse
+			if(checkForRecursionClasses(f.getType())){
+			findAllFieldsAndAddThemAsSubNodes(f.getType(),mdmt,false,recursionDepth);
+			}
+
+		}
+		
+		if(recurseThroughSuperClasses){
+		Class<?> superClass = c;
+		
+		while((superClass = (Class<?>) superClass.getGenericSuperclass())  != null){
+		
+		Field[] superClassFields = superClass.getDeclaredFields();
+		
+		for(Field f: superClassFields){
+			
+			MyDefaultMutableTreeNode mdmt = new MyDefaultMutableTreeNode(f.getName() + " (" + f.getType().getSimpleName() + ")",f.getType());
+			child.add(mdmt);
+			//recurse
+			if(checkForRecursionClasses(f.getType())){
+			findAllFieldsAndAddThemAsSubNodes(f.getType(),mdmt,false,recursionDepth);
+			}
+		}
+		}
+		}
+		
+	}
+
+	private boolean checkForRecursionClasses(Class<?> type) {
+		
+		if(type.equals(String.class)){
+			return false;
+		}
+		if(type.equals(Integer.class)){
+			return false;
+		}
+		if(type.equals(Date.class)){
+			return false;
+		}
+		if(type.equals(Boolean.class)){
+			return false;
+		}
+		if(type.equals(Hashtable.class)){
+			return false;
+		}
+		if(type.equals(Long.class)){
+			return false;
+		}
+		
+		return true;
 	}
 
 	private void createPopupMenu(Object o, JTree tree, int x, int y) {
@@ -312,14 +400,16 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 		if (o instanceof Class<?>) {
 
 			JMenuItem item1 = new JMenuItem("Open Data");
-			JMenuItem item2 = new JMenuItem("Open View");
-			JMenuItem item3 = new JMenuItem("Open Data Controls");
-			JMenuItem item4 = new JMenuItem("Truncate Data");
+			JMenuItem item2 = new JMenuItem("Open Table View");
+			JMenuItem item3 = new JMenuItem("Open Object Graph View");
+			JMenuItem item4 = new JMenuItem("Open Data Controls");
+			JMenuItem item5 = new JMenuItem("Truncate Data");
 
 			popup.add(item1);
 			popup.add(item2);
 			popup.add(item3);
 			popup.add(item4);
+			popup.add(item5);
 
 			
 			item1.addActionListener(new ActionListener() {

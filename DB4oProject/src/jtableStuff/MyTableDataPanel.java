@@ -86,19 +86,23 @@ public class MyTableDataPanel extends JPanel {
 					tc.setPreferredWidth(100);
 					continue;
 				}
+				else if(c.equals(String.class)){
+					tc.setPreferredWidth(200);
+					continue;
+				}
 				else if(c.equals(DB4oModel.class)){
-					tc.setPreferredWidth(600);
+					tc.setPreferredWidth(300);
 					continue;
 				}
 				else if(c.equals(DB4oInternalId.class)){
 					tc.setPreferredWidth(100);
 					continue;
 				}
-				else if(c.equals(String.class)){
-					tc.setPreferredWidth(200);
+				else if(c.equals(Integer.class)){
+					tc.setPreferredWidth(100);
 					continue;
 				}
-				else if(c.equals(Integer.class)){
+				else if(c.equals(Long.class)){
 					tc.setPreferredWidth(100);
 					continue;
 				}
@@ -107,7 +111,7 @@ public class MyTableDataPanel extends JPanel {
 					continue;
 				}
 				else if(c.equals(Boolean.class)){
-					tc.setPreferredWidth(50);
+					tc.setPreferredWidth(75);
 					continue;
 				}
 				tc.setPreferredWidth(200);

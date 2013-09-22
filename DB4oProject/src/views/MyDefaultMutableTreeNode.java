@@ -8,11 +8,12 @@ import models.DB4oFile;
 
 public class MyDefaultMutableTreeNode extends DefaultMutableTreeNode {
 	
+	private String nodeViewName;
 	private Object objectInNode = null;
 	
-	public MyDefaultMutableTreeNode(Object o){
+	public MyDefaultMutableTreeNode(String viewName, Object o){
 		
-		super(o.toString());
+		this.setNodeViewName(viewName);
 		this.setObjectInNode(o);
 		
 	}
@@ -27,6 +28,10 @@ public class MyDefaultMutableTreeNode extends DefaultMutableTreeNode {
 	
 	public String toString(){
 		
+		if(this.getNodeViewName() != null){
+			return this.getNodeViewName();
+		}
+		
 		if(objectInNode instanceof DB4oFile){
 			return ((DB4oFile) objectInNode).getName();
 		}
@@ -37,6 +42,14 @@ public class MyDefaultMutableTreeNode extends DefaultMutableTreeNode {
 			return ((MyHomeFolder) objectInNode).getName();
 		}
 		else return super.toString();
+	}
+
+	public String getNodeViewName() {
+		return nodeViewName;
+	}
+
+	public void setNodeViewName(String nodeViewName) {
+		this.nodeViewName = nodeViewName;
 	}
 
 }

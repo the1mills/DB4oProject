@@ -9,9 +9,7 @@ public class MyHomeFolder extends File{
 		// TODO Auto-generated constructor stub
 	}
 
-//	public MyHomeFolder(String pathname) {
-//		super(pathname);
-//		// TODO Auto-generated constructor stub
-//	}
-
+	public String toString(){
+		return "DB4o Databases";
+	}
 }

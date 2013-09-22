@@ -6,9 +6,11 @@ import java.util.Vector;
 import annotations.EditableField;
 import annotations.ViewableField;
 
-
 public class MySecondModel extends DB4oModel {
-	
+
+	@ViewableField
+	@EditableField
+	private Boolean shizzzBool = true;
 	@ViewableField
 	@EditableField
 	private String life = "l.i.f.e.";
@@ -17,13 +19,23 @@ public class MySecondModel extends DB4oModel {
 	private String death = "death";
 
 	public MySecondModel() {
-		
+
 		super();
 		canAddNewRecordInObjectViewer = true;
 		canEditRecordInObjectViewer = true;
-//		this.setDatabaseConnectionInfo(new DB4oConnectionInfo(DB4oModel.prePath + this.getClass().getSimpleName() + "Connection"+".db4o"));
-//			this.setSeqName(this.getClass().getName() + "Sequence");
-		
+		// this.setDatabaseConnectionInfo(new
+		// DB4oConnectionInfo(DB4oModel.prePath +
+		// this.getClass().getSimpleName() + "Connection"+".db4o"));
+		// this.setSeqName(this.getClass().getName() + "Sequence");
+
+	}
+
+	public Boolean getShizzzBool() {
+		return shizzzBool;
+	}
+
+	public void setShizzzBool(Boolean shizzzBool) {
+		this.shizzzBool = shizzzBool;
 	}
 
 	public String getLife() {
@@ -44,10 +56,10 @@ public class MySecondModel extends DB4oModel {
 
 	@Override
 	public Vector<Object> getFieldDropDownValues(Field f) {
-Vector<Object> vo = new Vector<Object>();
-		
+		Vector<Object> vo = new Vector<Object>();
+
 		try {
-			if(f == DB4oModel.class.getField("userDefinedFileName")){
+			if (f == DB4oModel.class.getField("userDefinedFileName")) {
 				vo.add(new String("candy"));
 				vo.add(new String("death"));
 				return vo;

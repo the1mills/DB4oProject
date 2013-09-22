@@ -6,13 +6,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Hashtable;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import models.DB4oModel;
-
 import jtableStuff.JTableData;
 import jtableStuff.MyTableDataPanel;
+import models.DB4oModel;
 
 public class MyTabbedPane extends JPanel implements MouseListener {
 
@@ -37,6 +37,9 @@ public class MyTabbedPane extends JPanel implements MouseListener {
 	public void addMainTab() {
 
 		JPanel mainTab = new JPanel();
+		mainTab.add(new JButton("Refactor Database"));
+		mainTab.add(new JButton("BackUp Database"));
+		mainTab.add(new JButton("Delete Database"));
 		jtp.addTab("Main Tab", mainTab);
 		revalidate();
 		repaint();
