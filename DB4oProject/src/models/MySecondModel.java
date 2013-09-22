@@ -53,6 +53,7 @@ public class MySecondModel extends DB4oModel {
 	public void setDeath(String death) {
 		this.death = death;
 	}
+	
 
 	@Override
 	public Vector<Object> getFieldDropDownValues(Field f) {

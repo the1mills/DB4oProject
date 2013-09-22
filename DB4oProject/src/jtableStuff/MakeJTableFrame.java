@@ -75,10 +75,12 @@ public class MakeJTableFrame extends JFrame implements ActionListener{
 			
 			o =  table.getModel().getValueAt(i, 1);
 			if(o instanceof DB4oModel){
-				((DB4oModel) o).delete();
+				((DB4oModel) o).delete(false);
 			}
 				
 		}
+		
+		((DB4oModel) o).commit();
 		
 		 
 		  

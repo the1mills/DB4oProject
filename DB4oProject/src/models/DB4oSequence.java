@@ -20,7 +20,7 @@ public class DB4oSequence extends DB4oModel{
 		
 		Integer seq = sequenceNumber;
 		sequenceNumber++;
-		save();
+		save(true);
 		return seq;
 	}
 	

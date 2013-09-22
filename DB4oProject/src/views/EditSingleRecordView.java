@@ -127,8 +127,10 @@ import annotations.ViewableField;
 			}
 			
 //			this.setMinimumSize(new Dimension(400,600));
-//			this.setMaximumSize(new Dimension(1000,800));
-			this.pack();
+			
+//			this.setMaximumSize(new Dimension(1000,700));
+//			this.pack();
+			this.setSize(700, 700);
 		}
 		
 
@@ -329,7 +331,7 @@ import annotations.ViewableField;
 				
 			}
 			
-			db4m.save();
+			db4m.save(true);
 			mdtv.refreshView(db4c);
 		}
 

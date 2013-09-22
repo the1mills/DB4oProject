@@ -71,14 +71,13 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 
 	private JScrollPane js;
 	private JTree tree;
-	private Vector<Class<?>> vectorOfUniqueClasses = new Vector<Class<?>>();
 
 	public static Vector<DB4oFile> db4oFiles = new Vector<DB4oFile>();
 
 	public static Vector<DB4oConnection> dbcv = new Vector<DB4oConnection>();
 	public static Hashtable<String, DB4oConnection> dbch = new Hashtable<String, DB4oConnection>();
 	public static int recursionDepth = 0;
-	public static int recursionDepthLimit = 4;
+	public static int recursionDepthLimit = 7;
 
 	public DB4oObjectViewer() {
 
@@ -160,47 +159,28 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 
 			DB4oConnection dbc = MyConnections.getConnection(f);
 			dbcv.add(dbc);
-			Class<DB4oModel> db4c = null;
 			
-			Vector<Class<?>> vectorOfUniqueClassesTemp = dbc.getListOfAllModelClassesInDB();
+			String className = f.getName().replace(".db4o", "");
+			
+			Vector<Class<?>> vectorOfUniqueClassesTemp = dbc.getListOfAllSpecificModelClassesInDB(className);
+//			Vector<Class<?>> vectorOfUniqueClassesTemp = dbc.getListOfAllModelClassesInDB();
 //			Vector<Class<?>> vectorOfUniqueClassesTemp = dbc.getListOfUniqueClassesInDB();
 			
-			if(vectorOfUniqueClassesTemp.size() > 1){
-				JOptionPane.showMessageDialog(null, "Error: More than one DB4oModel class in DB4oFile with name:\n" + f.getAbsolutePath());
+			boolean seeIfOk = processForSingleDB4oModelTypePerDB(f, vectorOfUniqueClassesTemp);
+//			boolean seeIfOk = processForMultipleTypesPerDB(f, vectorOfUniqueClassesTemp);
+		
+			if(!seeIfOk){
+				JOptionPane.showMessageDialog(null, "Error processing data in this file: " + f.getAbsolutePath());
 				return;
 			}
 			
-			else if(vectorOfUniqueClassesTemp.size() > 0){
-				Class<?> c = vectorOfUniqueClassesTemp.get(0);
-				if(!DB4oModel.class.isAssignableFrom(c)){
-					JOptionPane.showMessageDialog(null, "Error: There is a class in the DB that is not a subclass of DB4oModel, in file:\n" + f.getAbsolutePath());
-					return;
-				}
-				db4c = (Class<DB4oModel>) c;
-			}
-			
-			else{
-				try {
-					String className = f.getName().replace(".db4o", "");
-					db4c = (Class<DB4oModel>) Class.forName("models." + className);
-					
-				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				vectorOfUniqueClassesTemp.add(db4c);
-			}
-
-		
 			
 			for (Class<?> c : vectorOfUniqueClassesTemp) {
 
-				vectorOfUniqueClasses.add(c);
 				dbch.put(c.getName(), dbc);
 				DB4oModel.hcd.put((Class<DB4oModel>) c, dbc.getDbci());
 				MyDefaultMutableTreeNode child2 = new MyDefaultMutableTreeNode(c.getSimpleName() + "(DB4oModel)",c);
 				child1.add(child2);
-
 				recursionDepth = 0;
 				findAllFieldsAndAddThemAsSubNodes(c,child2,true,recursionDepth);
 				
@@ -313,12 +293,72 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 		};
 		tree.addMouseListener(ml);
 
-		westpanel.add(js = new JScrollPane(tree));
+		westpanel.setLayout(new BorderLayout());
+		westpanel.add(js = new JScrollPane(tree),BorderLayout.CENTER);
 		//westpanel.setPreferredSize(new Dimension(500,3000));
-		js.setPreferredSize(new Dimension(300,3000));
-		westpanel.setMaximumSize(new Dimension(300,2900));
+		js.setPreferredSize(new Dimension(350,3000));
+		westpanel.setMaximumSize(new Dimension(400,2900));
 		westpanel.revalidate();
 		westpanel.repaint();
+	}
+
+	private boolean processForMultipleTypesPerDB(DB4oFile f,
+			Vector<Class<?>> vectorOfUniqueClassesTemp) {
+		
+
+		Vector<Class<DB4oModel>> db4cv = new Vector<Class<DB4oModel>>();
+		
+		if(vectorOfUniqueClassesTemp.size() > 1){
+			
+			for(Class<?> c: vectorOfUniqueClassesTemp){
+				if(DB4oModel.class.isAssignableFrom(c)){
+					db4cv.add((Class<DB4oModel>) c);
+				}
+			}
+			if(db4cv.size() > 1){
+			JOptionPane.showMessageDialog(null, "Error: More than one DB4oModel class in DB4oFile with name:\n" + f.getAbsolutePath());
+			return false;
+			}
+		}
+		
+	
+		return true;
+	}
+
+	private boolean processForSingleDB4oModelTypePerDB(DB4oFile f, Vector<Class<?>> vectorOfUniqueClassesTemp) {
+		
+
+		Class<DB4oModel> db4c = null;
+		
+		if(vectorOfUniqueClassesTemp.size() > 1){
+			JOptionPane.showMessageDialog(null, "Error: More than one DB4oModel class in DB4oFile with name:\n" + f.getAbsolutePath());
+			return false;
+		}
+		
+		if(vectorOfUniqueClassesTemp.size() > 0){
+			Class<?> c = vectorOfUniqueClassesTemp.get(0);
+			if(!DB4oModel.class.isAssignableFrom(c)){
+				JOptionPane.showMessageDialog(null, "Error: There is a class in the DB that is not a subclass of DB4oModel, in file:\n" + f.getAbsolutePath());
+				return false;
+			}
+			db4c = (Class<DB4oModel>) c;
+		}
+		
+		else{
+			//we must use this if the database files exist but no records/objects are stored
+			try {
+				String className = f.getName().replace(".db4o", "");
+				db4c = (Class<DB4oModel>) Class.forName("models." + className);
+				
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			System.out.println("POTENTIAL PROBLEM: Have to use file to find DB4oModel class...");
+			vectorOfUniqueClassesTemp.add(db4c);
+		}
+		
+		return true;
 	}
 
 	private void findAllFieldsAndAddThemAsSubNodes(Class<?> cIn,
@@ -348,6 +388,7 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 
 		}
 		
+		//we only go through superclasses once for DB4oModel subclass
 		if(recurseThroughSuperClasses){
 		Class<?> superClass = c;
 		

@@ -1,6 +1,7 @@
 package views;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,9 +29,6 @@ import utilities.DB4oInternalId;
 public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 		ActionListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String tabName = null;
 	private Class<DB4oModel> db4oClass = null;
@@ -255,10 +253,13 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 
 				}
 
+				
 				for (DB4oModel dm : v) {
 
-					dm.delete();
+					dm.delete(false);
 				}
+				
+				v.get(0).commit();
 
 				refreshView(db4oClass);
 
@@ -378,17 +379,20 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 	public void addTabComponent(final MyDB4oTabbedView mdtv,
 			final MyTabbedPane mtp) {
 
-		final int index = mtp.getJtp().indexOfComponent(this);
+		int index = mtp.getJtp().indexOfComponent(this);
 		JPanel p = new JPanel();
+		p.setOpaque(true);
+		p.setBackground(Color.black);
 		p.setLayout(new BorderLayout());
 		JPanel centerPanel = new JPanel();
 		JLabel titleLabel = new JLabel(this.getTabName());
+		titleLabel.setForeground(Color.pink.darker());
 		centerPanel.add(titleLabel);
 		p.add(centerPanel, BorderLayout.CENTER);
 		JPanel eastPanel = new JPanel();
 		p.add(eastPanel, BorderLayout.EAST);
 		JButton jbtn = new JButton("x");
-		jbtn.setPreferredSize(new Dimension(15, 15));
+		jbtn.setPreferredSize(new Dimension(20, 20));
 		eastPanel.add(jbtn);
 		jbtn.addActionListener(new ActionListener() {
 

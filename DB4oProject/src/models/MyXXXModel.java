@@ -14,21 +14,27 @@ public class MyXXXModel extends DB4oModel {
 	private String deathMonkey;
 	@EditableField
 	private String shutTrap;
+	@ViewableField
 	@EditableField
 	private String mellowShit;
+	@ViewableField
 	@EditableField
 	private String fuckThisMonkey;
+	@ViewableField
 	@EditableField
 	private String shitTabaggon;
 	@EditableField
 	private String helloDeathShit;
+	@ViewableField
 	@EditableField
 	private String fudgeMonkey;
 	@EditableField
 	private String sillyDeathFuck;
 	@EditableField
+	@ViewableField
 	private String jelloPudding;
 	@EditableField
+	@ViewableField
 	private String cellophane;
 	@EditableField
 	private String shizzleNizzle;

@@ -25,7 +25,6 @@ public class MyTabbedPane extends JPanel implements MouseListener {
 		jtp = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT) {
 
 		
-			
 		};
 
 		this.setBackground(Color.orange);
@@ -37,6 +36,10 @@ public class MyTabbedPane extends JPanel implements MouseListener {
 	public void addMainTab() {
 
 		JPanel mainTab = new JPanel();
+		//this should be made into a command line tool to create a new DB4o project in a particular directory
+		mainTab.add(new JButton("Create New Project"));
+		//this might not be necessary, only way I know to create new DB is to store an object with a particular class
+		mainTab.add(new JButton("Create New Database"));
 		mainTab.add(new JButton("Refactor Database"));
 		mainTab.add(new JButton("BackUp Database"));
 		mainTab.add(new JButton("Delete Database"));
@@ -54,12 +57,9 @@ public class MyTabbedPane extends JPanel implements MouseListener {
 		hclass.put((Class<DB4oModel>) c,  mdtv);
 		mdtv.addTabComponent(mdtv,this);
 		mdtv.addStandardNorthPanel();
-		
 		jtp.setSelectedComponent(mdtv);
 		revalidate();
-		
 		repaint();
-
 	}
 
 	public void addTab(Class<DB4oModel> c) {

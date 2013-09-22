@@ -148,6 +148,46 @@ public class DB4oConnection {
 		return allClasses;
 	}
 	
+	
+	public Vector<Class<?>> getListOfAllSpecificModelClassesInDB(String className) {
+
+		Vector<Class<?>> allClasses = new Vector<Class<?>>();
+
+		Class<DB4oModel> dbClass = null;
+		try {
+			 dbClass = (Class<DB4oModel>) Class.forName("models." + className);
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		if(dbClass == null){
+			return null;
+		}
+		
+		Query q = getDb().query();
+		q.constrain(dbClass);
+
+		ObjectSet<Class<?>> x = q.execute();
+
+		while (x.hasNext()) {
+
+			try {
+				Object o = x.next();
+				Class<?> c = o.getClass();
+
+				if (!allClasses.contains(c)) {
+					allClasses.add(c);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
+
+		return allClasses;
+	}
+	
 	public Vector<Class<?>> getListOfAllModelClassesInDB() {
 
 		Vector<Class<?>> allClasses = new Vector<Class<?>>();

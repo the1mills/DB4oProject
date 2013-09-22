@@ -18,6 +18,8 @@ public class FuckShitModel extends DB4oModel {
 	@ViewableField
 	@EditableField
 	private Integer fuckass = new Integer(0);
+	@ViewableField
+	private MySecondModel msm;
 
 	public FuckShitModel() {
 		
@@ -72,6 +74,14 @@ public class FuckShitModel extends DB4oModel {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public MySecondModel getMsm() {
+		return msm;
+	}
+
+	public void setMsm(MySecondModel msm) {
+		this.msm = msm;
 	}
 
 }

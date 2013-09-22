@@ -166,7 +166,7 @@ public class AddNewRecordView extends JDialog implements ActionListener {
 		errorMessageLabel = new JLabel();
 		errorMessageLabel.setForeground(Color.red.darker());
 		mainCenterPanel.add(errorMessageLabel, BorderLayout.SOUTH);
-		this.setSize(700, 900);
+		this.setSize(700, 700);
 	}
 
 	private void findEditableFields() {
@@ -348,7 +348,7 @@ public class AddNewRecordView extends JDialog implements ActionListener {
 
 		}
 
-		db4m.save();
+		db4m.save(true);
 		mdtv.refreshView(db4c);
 		return true;
 	}

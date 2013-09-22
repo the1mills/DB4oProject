@@ -31,7 +31,7 @@ public class MySequences {
 			//if sequence is not in database, create a new sequence
 			System.out.println("sequence was null twice ---> it could not be found in Java memory or DB, creating new sequence and saving new sequence.");
 			dseq = new DB4oSequence(dsi);
-			dseq.save();
+			dseq.save(true);
 			dseq.getDb4oConn().commit();
 			seqHash.put(dsi, dseq);
 		}

@@ -53,7 +53,7 @@ public abstract class DB4oModel {
 	public abstract Vector<Object> getFieldDropDownValues(Field f);
 
 
-	public final void save() {
+	public final void save(boolean commit) {
 
 
 		if (dateCreated == null) {
@@ -71,14 +71,18 @@ public abstract class DB4oModel {
 			e.printStackTrace();
 		}
 		
+		if(commit){
 		commit();
+		}
 
 	}
 
-	public final void delete() {
+	public final void delete(boolean commit) {
 
 		this.getDb4oConn().delete(this);
+		if(commit){
 		commit();
+		}
 	}
 	
 	public final void commit() {
