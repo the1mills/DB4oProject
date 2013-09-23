@@ -27,7 +27,7 @@ public class MyShitFuckingModel extends DB4oModel {
 		
 		super();
 		canAddNewRecordInObjectViewer = true;
-		canEditRecordInObjectViewer = false;
+		canEditRecordInObjectViewer = true;
 	}
 	
 

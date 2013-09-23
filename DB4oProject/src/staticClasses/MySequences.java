@@ -22,7 +22,7 @@ public class MySequences {
 		
 		if(dseq == null){
 			//find sequence in database
-			DB4oSequenceConnection dc = MyConnections.getSequenceConnection(dsi);
+			DB4oSequenceConnection dc =/* MyConnections.getSequenceConnection(dsi);*/ null;
 			dseq = (DB4oSequence) dc.getObjectWithClassAndAttributes(DB4oSequence.class,"sequenceName",dsi.getSequenceName());
 			if(dseq != null){
 				seqHash.put(dsi, dseq);

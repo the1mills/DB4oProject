@@ -40,6 +40,8 @@ public class MyTabbedPane extends JPanel implements MouseListener {
 		mainTab.add(new JButton("Create New Project"));
 		//this might not be necessary, only way I know to create new DB is to store an object with a particular class
 		mainTab.add(new JButton("Create New Database"));
+		//database integrity - check to see if all files only contain one DB4oModel class.
+		mainTab.add(new JButton("Run Database Integrity Checks"));
 		mainTab.add(new JButton("Refactor Database"));
 		mainTab.add(new JButton("BackUp Database"));
 		mainTab.add(new JButton("Delete Database"));
@@ -50,16 +52,21 @@ public class MyTabbedPane extends JPanel implements MouseListener {
 
 	public void addTabForOnlyDataView(Class<DB4oModel> c, JTableData jta) {
 
-		MyTableDataPanel mtdp = new MyTableDataPanel(jta);
-		MyDB4oTabbedView mdtv = new MyDB4oTabbedView(c);
-		mdtv.addDataPanel(mtdp);
-		jtp.addTab("data n stuff", mdtv);
-		hclass.put((Class<DB4oModel>) c,  mdtv);
-		mdtv.addTabComponent(mdtv,this);
-		mdtv.addStandardNorthPanel();
-		jtp.setSelectedComponent(mdtv);
-		revalidate();
-		repaint();
+		try {
+			MyTableDataPanel mtdp = new MyTableDataPanel(jta);
+			MyDB4oTabbedView mdtv = new MyDB4oTabbedView(c);
+			mdtv.addDataPanel(mtdp);
+			jtp.addTab("data n stuff", mdtv);
+			hclass.put((Class<DB4oModel>) c,  mdtv);
+			mdtv.addTabComponent(mdtv,this);
+			mdtv.addStandardNorthPanel();
+			jtp.setSelectedComponent(mdtv);
+			revalidate();
+			repaint();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void addTab(Class<DB4oModel> c) {

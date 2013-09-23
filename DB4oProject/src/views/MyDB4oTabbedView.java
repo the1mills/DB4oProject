@@ -41,9 +41,11 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 	private JButton refreshButton;
 	private EditSingleRecordView erv;
 	private EditMultipleRecordsView emrv;
-	private JButton viewObjectGraph;
+	private JButton viewObjectGraphButton;
 	private JButton filterDataButton;
 	private JButton createDataViewButton;
+	private JButton commitButton = new JButton("Commit");
+	private JButton rollbackButton = new JButton("Rollback");
 
 	public MyDB4oTabbedView(Class<DB4oModel> className) {
 
@@ -80,7 +82,7 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 		Method m = null;
 
 		try {
-			m = db4m.getClass().getMethod("isCanAddNewRecordInObjectViewer",
+			m = db4m.getClass().getMethod("getCanAddNewRecordInObjectViewer",
 					null);
 		} catch (SecurityException e1) {
 			// TODO Auto-generated catch block
@@ -127,7 +129,7 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 		Method m1 = null;
 
 		try {
-			m1 = db4m.getClass().getMethod("isCanEditRecordInObjectViewer",
+			m1 = db4m.getClass().getMethod("getCanEditRecordInObjectViewer",
 					null);
 		} catch (SecurityException e1) {
 			// TODO Auto-generated catch block
@@ -179,14 +181,7 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 						return;
 					}
 
-					DB4oConnectionInfo dbci = DB4oModel.hcd.get(db4oClass);
-
-					if (dbci == null) {
-						System.out.println("!!!!null connection info!!!!");
-						return;
-					}
-
-					DB4oConnection dbc = MyConnections.getConnection(dbci);
+					DB4oConnection dbc = MyConnections.getConnection(DB4oModel.prePath + db4oClass.getSimpleName() +".db4o");
 
 					if (dbc != null) {
 						dbc.deleteFromDatabaseByClass(db4oClass);
@@ -278,23 +273,24 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 		northPanel.add(editRecordButton);
 		northPanel.add(deleteSelectedButton);
 
-		viewObjectGraph = new JButton("View Object Graph");
-		viewObjectGraph.addActionListener(this);
+		viewObjectGraphButton = new JButton("View Object Graph");
+		viewObjectGraphButton.addActionListener(this);
 
 		filterDataButton = new JButton("Filter");
 		filterDataButton.addActionListener(this);
 
-		// here we create a view that can be saved by the user, the view can be
-		// used to delete records
+		// here we can create a view that can be saved by the user, the view can be
+		// used to filter or delete records
 		// we should keep the main view as ALWAYS having ALL the data
 		createDataViewButton = new JButton("Create View");
 		createDataViewButton.addActionListener(this);
 
-		northPanel.add(viewObjectGraph);
+		northPanel.add(viewObjectGraphButton);
 		northPanel.add(filterDataButton);
 		northPanel.add(createDataViewButton);
-
 		northPanel.add(truncateButton);
+		northPanel.add(commitButton);
+		northPanel.add(rollbackButton);
 
 		this.revalidate();
 		this.repaint();
@@ -322,19 +318,6 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 		this.repaint();
 	}
 
-	// public void addDataPaneWithClass(Class<?> dm){
-	//
-	// this.removeAll();
-	//
-	// JTableData jta = dm.getDb4oConn().getTableDataForObject(dm);
-	// // JTableData jta = dm.getDb4oConn().getTableDataForObject(dm);
-	// MyTableDataPanel mtdp = new MyTableDataPanel(jta);
-	//
-	// this.add(mtdp,BorderLayout.CENTER);
-	//
-	// this.revalidate();
-	// this.repaint();
-	// }
 
 	public void addDataPaneWithClass(Class<DB4oModel> c) {
 
@@ -343,9 +326,9 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 		}
 
 		db4oClass = (Class<DB4oModel>) c;
+		
+		DB4oConnection dbc = MyConnections.getConnection(DB4oModel.prePath + c.getSimpleName() + ".db4o");
 
-		DB4oConnection dbc = DB4oObjectViewer.dbch.get(c.getName());
-		// JTableData jta = dbc.getTableDataForClass(c);
 		JTableData jta = null;
 		try {
 			jta = dbc.getTableDataForClassAndSuperClasses(c);
@@ -542,11 +525,8 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 				return;
 			}
 
-			if (dbci == null) {
-				dbci = DB4oModel.hcd.get(db4oClass);
-			}
 			if (dbc == null) {
-				dbc = MyConnections.getConnection(dbci);
+				dbc = MyConnections.getConnection(DB4oModel.prePath + db4oClass.getSimpleName() + ".db4o");
 			}
 
 			DB4oModel db4m = dbc.getDb().ext().getByID(dii.getId());
@@ -577,14 +557,7 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 			return;
 		}
 
-		DB4oConnectionInfo dbci = DB4oModel.hcd.get(db4oClass);
-
-		if (dbci == null) {
-			System.out.println("null connection info !!!");
-			return;
-		}
-
-		DB4oConnection dbc = MyConnections.getConnection(dbci);
+		DB4oConnection dbc = MyConnections.getConnection(DB4oModel.prePath + db4oClass.getSimpleName() + ".db4o");
 
 		if (dbc == null) {
 			System.out.println("null connection !!!");
@@ -615,6 +588,22 @@ public class MyDB4oTabbedView extends AbstractMyDB4oTabbedView implements
 
 	public void setEmrv(EditMultipleRecordsView emrv) {
 		this.emrv = emrv;
+	}
+
+	public JButton getCommitButton() {
+		return commitButton;
+	}
+
+	public void setCommitButton(JButton commitButton) {
+		this.commitButton = commitButton;
+	}
+
+	public JButton getRollbackButton() {
+		return rollbackButton;
+	}
+
+	public void setRollbackButton(JButton rollbackButton) {
+		this.rollbackButton = rollbackButton;
 	}
 
 }

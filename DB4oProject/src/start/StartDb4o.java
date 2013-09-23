@@ -26,32 +26,44 @@ public class StartDb4o {
 		
 		MyXXXModel m = new MyXXXModel();
 
-		for (int i = 0; i < 4000; i++) {
+		for (int i = 0; i < 4; i++) {
 			m = new MyXXXModel();
+			if(i==3){
+				m.setCanEditRecordInObjectViewer(false);
+			}
 			m.save(false);
 		}
 		m.commit();
 
 		FuckShitModel m2 = new FuckShitModel();
 
-		for (int i = 0; i < 4000; i++) {
+		for (int i = 0; i < 4; i++) {
 			m2 = new FuckShitModel();
+			if(i==3){
+				m2.setCanEditRecordInObjectViewer(false);
+			}
 			m2.save(false);
 		}
 		m2.commit();
 
 		MyShitFuckingModel m3 = new MyShitFuckingModel();
 
-		for (int i = 0; i < 4000; i++) {
+		for (int i = 0; i < 4; i++) {
 			m3 = new MyShitFuckingModel();
+			if(i==3){
+				m3.setCanEditRecordInObjectViewer(false);
+			}
 			m3.save(false);
 		}
 		m3.commit();
 
 		MySecondModel m4 = new MySecondModel();
 
-		for (int i = 0; i < 4000; i++) {
+		for (int i = 0; i < 4; i++) {
 			m4 = new MySecondModel();
+			if(i==3){
+				m4.setCanEditRecordInObjectViewer(false);
+			}
 			m4.save(false);
 		}
 		

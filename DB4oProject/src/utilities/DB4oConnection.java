@@ -37,22 +37,8 @@ public class DB4oConnection {
 	
 	
 	public DB4oConnection() {
-
-//		if (db == null) {
-//			this.openNewDb();
-//		}
-
 	}
 	
-	public DB4oConnection(String filename) {
-
-		dbci = new DB4oConnectionInfo(filename);
-
-		if (db == null) {
-			openNewDb();
-		}
-
-	}
 	
 	public DB4oConnection(DB4oConnectionInfo dbci) {
 
@@ -62,17 +48,6 @@ public class DB4oConnection {
 			openNewDb();
 		}
 
-	}
-	
-	public DB4oConnection(DB4oFile file) {
-
-		this.db4oFile = file;
-		this.dbci = new DB4oConnectionInfo(file.getAbsolutePath());
-
-		if (db == null) {
-			System.out.println("db was null, creating new DB.");
-			openNewDb();
-		}
 	}
 	
 

@@ -11,15 +11,16 @@ import utilities.DB4oSequenceConnection;
 
 public class MyConnections {
 
-	public static Hashtable<DB4oSequenceInfo, DB4oSequenceConnection> dbSeqConn = new Hashtable<DB4oSequenceInfo, DB4oSequenceConnection>();
 	public static Hashtable<DB4oConnectionInfo, DB4oConnection> dbConn = new Hashtable<DB4oConnectionInfo, DB4oConnection>();
 
 	public MyConnections() {
 		// TODO Auto-generated constructor stub
 	}
 	
+	
 	public static void printFuckingConnections(){
 		
+		System.out.println("connections list:");
 		Enumeration<?> k = dbConn.keys();
 		
 		while(k.hasMoreElements()){
@@ -28,17 +29,16 @@ public class MyConnections {
 			System.out.println(dbc);
 		}
 	}
-
-	public static DB4oConnection getConnection(DB4oFile file) {
+	
+	public static DB4oConnection getConnection(String filepath) {
 		
 		printFuckingConnections();
 		
-		DB4oConnectionInfo dbci = new DB4oConnectionInfo(file.getAbsolutePath());
+		DB4oConnectionInfo dbci = new DB4oConnectionInfo(filepath);
 		DB4oConnection dbc = dbConn.get(dbci);
 
 		if (dbc == null) {
-			dbc = new DB4oConnection(file);
-			dbc.setDbci(dbci);
+			dbc = new DB4oConnection(dbci);
 			dbConn.put(dbci, dbc);
 		}
 		return dbc;
@@ -48,28 +48,15 @@ public class MyConnections {
 	public static DB4oConnection getConnection(DB4oConnectionInfo dbci) {
 
 		
-//		printFuckingConnections();
+		printFuckingConnections();
 		DB4oConnection dbc = dbConn.get(dbci);
 
 		if (dbc == null) {
 			dbc = new DB4oConnection(dbci);
-			dbc.setDbci(dbci);
 			dbConn.put(dbci, dbc);
 		}
 		return dbc;
 	}
 	
-	public static DB4oSequenceConnection getSequenceConnection(DB4oSequenceInfo dsi) {
-
-		
-//		printFuckingConnections();
-		DB4oSequenceConnection dbc = dbSeqConn.get(dsi);
-
-		if (dbc == null) {
-			dbc = new DB4oSequenceConnection(dsi);
-			dbSeqConn.put(dsi, dbc);
-		}
-		return dbc;
-	}
 
 }

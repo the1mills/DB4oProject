@@ -75,7 +75,7 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 	public static Vector<DB4oFile> db4oFiles = new Vector<DB4oFile>();
 
 	public static Vector<DB4oConnection> dbcv = new Vector<DB4oConnection>();
-	public static Hashtable<String, DB4oConnection> dbch = new Hashtable<String, DB4oConnection>();
+	//public static Hashtable<String, DB4oConnection> dbch = new Hashtable<String, DB4oConnection>();
 	public static int recursionDepth = 0;
 	public static int recursionDepthLimit = 7;
 
@@ -157,7 +157,8 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 			MyDefaultMutableTreeNode child1 = new MyDefaultMutableTreeNode("DB4o File: " + f.getName(), f);
 			root.add(child1);
 
-			DB4oConnection dbc = MyConnections.getConnection(f);
+			String filePath = f.getAbsolutePath();
+			DB4oConnection dbc = MyConnections.getConnection(filePath);
 			dbcv.add(dbc);
 			
 			String className = f.getName().replace(".db4o", "");
@@ -177,8 +178,7 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 			
 			for (Class<?> c : vectorOfUniqueClassesTemp) {
 
-				dbch.put(c.getName(), dbc);
-				DB4oModel.hcd.put((Class<DB4oModel>) c, dbc.getDbci());
+				//DB4oModel.hcd.put((Class<DB4oModel>) c, dbc.getDbci());
 				MyDefaultMutableTreeNode child2 = new MyDefaultMutableTreeNode(c.getSimpleName() + "(DB4oModel)",c);
 				child1.add(child2);
 				recursionDepth = 0;
@@ -264,7 +264,9 @@ public class DB4oObjectViewer extends JFrame implements ActionListener,
 								return;
 							}
 							
-							DB4oConnection dbc = dbch.get(c.getName());
+//							DB4oConnection dbc = dbch.get(c.getName());
+							
+							DB4oConnection dbc = MyConnections.getConnection(DB4oModel.prePath + c.getSimpleName() + ".db4o");
 
 //							JTableData jta = dbc.getTableDataForClass(c);
 							JTableData jta = null;

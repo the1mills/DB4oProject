@@ -19,8 +19,10 @@ import annotations.ViewableField;
 public abstract class DB4oModel {
 
 
-	public boolean canAddNewRecordInObjectViewer;
-	public boolean canEditRecordInObjectViewer;
+	@ViewableField
+	public Boolean canAddNewRecordInObjectViewer = true;
+	@ViewableField
+	public Boolean canEditRecordInObjectViewer;
 	//public transient static String prePath = "C:\\Users\\alex\\Desktop\\db4oFiles\\";
 	public transient static String prePath = "C:\\Users\\denman\\Desktop\\db4oFiles\\";
 	@ViewableField
@@ -37,16 +39,15 @@ public abstract class DB4oModel {
 	private String userDefinedFileName;
 	@ViewableField
 	private Date dateCreated;
-	public transient static Hashtable<Class<DB4oModel>, DB4oConnectionInfo> hcd = new Hashtable<Class<DB4oModel>, DB4oConnectionInfo>();
-	
+
 	
 	public DB4oModel() {
 		
 //		EmbeddedConfiguration configuration = Db4oEmbedded.newConfiguration();
 //		configuration.file().generateUUIDs(ConfigScope.GLOBALLY);
 		
-		String conn = prePath + this.getClass().getSimpleName();
-		this.setDatabaseConnectionInfo(new DB4oConnectionInfo(conn + ".db4o"));
+		String conn = prePath + this.getClass().getSimpleName() + ".db4o";
+		this.setDatabaseConnectionInfo(new DB4oConnectionInfo(conn));
 	//	this.setSeqInfo(new DB4oSequenceInfo(conn + "Sequence.db4o"));
 	}
 	
@@ -143,15 +144,6 @@ public abstract class DB4oModel {
 //		return MySequences.getSequence(databaseConnectionInfo,seqInfo);
 //	}
 
-	public final static Hashtable<Class<DB4oModel>, DB4oConnectionInfo> getHcd() {
-		return hcd;
-	}
-
-	public final static void setHcd(
-			Hashtable<Class<DB4oModel>, DB4oConnectionInfo> hcd) {
-		DB4oModel.hcd = hcd;
-	}
-
 
 	public final DB4oConnectionInfo getDatabaseConnectionInfo() {
 		return databaseConnectionInfo;
@@ -162,24 +154,20 @@ public abstract class DB4oModel {
 		this.databaseConnectionInfo = databaseConnectionInfo;
 	}
 
-	public boolean isCanAddNewRecordInObjectViewer() {
+	
+	public Boolean getCanAddNewRecordInObjectViewer() {
 		return canAddNewRecordInObjectViewer;
 	}
 
 
-	public void setCanAddNewRecordInObjectViewer(
-			boolean canAddNewRecordInObjectViewer) {
-		this.canAddNewRecordInObjectViewer = canAddNewRecordInObjectViewer;
-	}
-	
-	public boolean isCanEditRecordInObjectViewer() {
+	public Boolean getCanEditRecordInObjectViewer() {
 		return canEditRecordInObjectViewer;
 	}
 
-	public void setCanEditRecordInObjectViewer(boolean canEditRecordInObjectViewer) {
+	public void setCanEditRecordInObjectViewer(Boolean canEditRecordInObjectViewer) {
 		this.canEditRecordInObjectViewer = canEditRecordInObjectViewer;
 	}
-	
+
 	public Db4oUUID getUuid() {
 		if(uuid == null){
 			uuid = this.getDb4oConn().getDb().ext().getObjectInfo(this).getUUID();
